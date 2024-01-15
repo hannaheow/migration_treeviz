@@ -5,12 +5,22 @@ format:
     geometry: 
       - paperwidth = 16in
       - paperheight = 21in
-      - top = 0.7in
-      - bottom = 0.7in
-      - right = 0.2in
-      - left = 0.2in
+      - top = 0.5in
+      - bottom = 0.5in
+      - right = 0.5in
+      - left = 0.5in
 editor: visual
 ---
+
+# US county-level net migration: 2009-2020
+
+Inspired by [Kieran Healy's US Population Pyramids (1900-2019)](https://kieranhealy.org/prints/pop-pyramids/), these "migration trees" depict the structure and patterns of the US population over time in an artful manner. Much like a population pyramid reveals the age structure of a population, a migration tree's depiction of net migration directionality enables a quick understanding of movement trends into and out of specific places.
+
+In this representation, each US county is symbolized by a line or "branch." The branches curve right for years when more people move to a county than leave it, and they curve left for years when more people leave than arrive. The tree's base signifies the year 2009, while the branch tips correspond to the year 2020. Line colors indicate the urbanicity category of each county, as defined by the [National Center for Health Statistics Urban-Rural Classification Scheme](https://www.cdc.gov/nchs/data_access/urban_rural.htm).
+
+Amidst climate change, the tree metaphor emphasizes the branching of communities in response to environmental shifts. The structure exposes the intricacies of climate-induced migration, illustrating ripple effects and the evolution of places. This visualization enhances the understanding of climate-migration nuances, providing insights into how populations adapt in a rapidly changing world. State-level differences in migration patterns are especially apparent here where states such as Alaska, Louisiana, and North Dakota appear to have more counties experiencing predominantly negative net migration while states such as Washington and Arizona have more counties experiencing consistently positive net migration.
+
+The data utilized for this visualization is sourced from the [IRS's US County-to-County Migration Data](https://www.irs.gov/statistics/soi-tax-stats-migration-data). An additional tool for exploring county-specific migration trees can be found [here](https://hannaheow.shinyapps.io/migration_treeviz/), and the code used to create these visuals is available [here](https://github.com/hannaheow/migration_treeviz).
 
 ```{r, fig.height = 99, fig.width = 99, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -107,11 +117,3 @@ caplot = ggplot() +
 calegend = cowplot::get_legend(caplot)
 as_ggplot(calegend)
 ```
-
-Inspired by [Kieran Healy's US Population Pyramids (1900-2019)](https://kieranhealy.org/prints/pop-pyramids/), these "migration trees" depict the structure and patterns of the US population over time in an artful manner. Much like a population pyramid reveals the age structure of a population, a migration tree's depiction of net migration directionality enables a quick understanding of movement trends into and out of specific places.
-
-In this representation, each US county is symbolized by a line or "branch." The branches curve right for years when more people move to a county than leave it, and they curve left for years when more people leave than arrive. The tree's base signifies the year 2009, while the branch tips correspond to the year 2020. Line colors indicate the urbanicity category of each county, as defined by the [National Center for Health Statistics Urban-Rural Classification Scheme](https://www.cdc.gov/nchs/data_access/urban_rural.htm).
-
-Amidst climate change, the tree metaphor emphasizes the branching of communities in response to environmental shifts. The structure exposes the intricacies of climate-induced migration, illustrating ripple effects and the evolution of places. This visualization enhances the understanding of climate-migration nuances, providing insights into how populations adapt in a rapidly changing world. State-level differences in migration patterns are especially apparent here where states such as Alaska, Illinois, and North Dakota appear to have more counties experiencing predominantly negative net migration while states such as Washington and Arizona have more counties experiencing consistently positive net migration.
-
-The data utilized for this visualization is sourced from the [IRS's US County-to-County Migration Data](https://www.irs.gov/statistics/soi-tax-stats-migration-data). An additional tool for exploring county-specific migration trees can be found [here](https://hannaheow.shinyapps.io/migration_treeviz/).
