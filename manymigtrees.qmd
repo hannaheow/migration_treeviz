@@ -1,0 +1,116 @@
+---
+title: ""
+format:
+  pdf: 
+    geometry: 
+      - paperwidth = 16in
+      - paperheight = 20in
+      - top = 0.2in
+      - bottom = 0.2in
+      - right = 0.2in
+      - left = 0.2in
+editor: visual
+---
+
+```{r, fig.height = 99, fig.width = 99, echo = FALSE, warning = FALSE, message = FALSE}
+
+load("migtree.Rdata")
+
+states = data.frame(state.abb, state.name)
+migtree = merge(ppu2, states, by.x = "statename", by.y = "state.abb")
+#verify that the discrepancy in n rows is due to dc 
+#dc = dplyr::anti_join(ppu2, states, by = c("statename" = "state.abb"))
+
+
+library(tidyverse)
+library(ggplot2)
+
+stateplots = list()
+urbcolors = RColorBrewer::brewer.pal(6,"Set2")
+colorpal = c(`6` = urbcolors[5], `5` = urbcolors[6], 
+             `4` = urbcolors[4], `3` = urbcolors[3],
+             `2` = urbcolors[2], `1` = urbcolors[1])
+
+statenames = state.name
+for (i in 1:length(statenames)){
+migtreesub = migtree[migtree$state.name == statenames[i],]
+
+p = ggplot() + 
+  geom_path(data = migtreesub[order(migtreesub$year),],
+            aes(x = x_adj_mig, y = y_adj_mig,  group = origid, color = as.factor(urbcode)),
+            alpha = 0.9,  
+  position = position_dodge(width = 0.2)) +
+  annotate("text", x = 0, y = ifelse(statenames[i] == "Wyoming", 1.5, 0), label = unique(migtreesub$state.name), size = 30)+
+  scale_color_manual(values = colorpal, labels = c(`6` = "Noncore", 
+                                                   `5` = "Micropolitan", 
+                                                   `4` = "Small Metro", 
+                                                   `3` = "Medium Metro", 
+                                                   `2` = "Large Fringe Metro", 
+                                                   `1` = "Large Central Metro"), 
+                     drop = FALSE) + 
+  scale_size_identity() +
+  scale_alpha_identity() + 
+  #ggtitle(unique(cinterest$name)) + 
+  theme_bw()+
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(), 
+        legend.title = element_blank(),
+        legend.text = element_blank(),
+        legend.position = "none") 
+stateplots[[i]] = p 
+}
+library(ggpubr)
+
+
+do.call("ggarrange", c(stateplots, nrow = 10, ncol = 5, common.legend = FALSE))
+```
+
+```{r legend only, message = FALSE, warning = FALSE, echo = FALSE}
+
+casub = migtree[migtree$state.name == "California",]
+
+
+caplot = ggplot() + 
+  geom_path(data = casub[order(casub$year),],
+            aes(x = x_adj_mig, y = y_adj_mig,  group = origid, color = as.factor(urbcode)),
+            alpha = 0.9,  
+  position = position_dodge(width = 0.2)) +
+  # annotate("text", x = 0, y = ifelse(statenames[i] == "Wyoming", 1.5, 0), label = unique(migtreesub$state.name), size = 30)+
+  scale_color_manual(values = colorpal, labels = c(`6` = "Noncore", 
+                                                   `5` = "Micropolitan", 
+                                                   `4` = "Small Metro", 
+                                                   `3` = "Medium Metro", 
+                                                   `2` = "Large Fringe Metro", 
+                                                   `1` = "Large Central Metro"), 
+                     drop = FALSE) + 
+  scale_size_identity() +
+  scale_alpha_identity() + 
+  #ggtitle(unique(cinterest$name)) + 
+  theme_bw()+
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank(),
+        axis.text = element_blank(), 
+        legend.title = element_blank(),
+        legend.position = "bottom") + 
+  guides(color = guide_legend(nrow = 1))
+
+calegend = cowplot::get_legend(caplot)
+as_ggplot(calegend)
+```
+
+Inspired by [Kieran Healy's US Population Pyramids (1900-2019)](https://kieranhealy.org/prints/pop-pyramids/), these "migration trees" depict the structure and patterns of the US population over time in an artful manner. Much like a population pyramid reveals the age structure of a population, a migration tree's depiction of net migration directionality enables a quick understanding of movement trends into and out of specific places.
+
+In this representation, each US county is symbolized by a line or "branch." The branches curve right for years when more people move to a county than leave it, and they curve left for years when more people leave than arrive. The tree's base signifies the year 2009, while the branch tips correspond to the year 2020. Line colors indicate the urbanicity category of each county, as defined by the [National Center for Health Statistics Urban-Rural Classification Scheme](https://www.cdc.gov/nchs/data_access/urban_rural.htm).
+
+Amidst climate change, the tree metaphor emphasizes the branching of communities in response to environmental shifts. The structure exposes the intricacies of climate-induced migration, illustrating ripple effects and the evolution of places. This visualization enhances the understanding of climate-migration nuances, providing insights into how populations adapt in a rapidly changing world. State-level differences in migration patterns are especially apparent here where states such as Alaska, Illinois, and North Dakota appear to have more counties experiencing predominantly negative net migration while states such as Washington and Arizona have more counties experiencing consistently positive net migration.
+
+The data utilized for this visualization is sourced from the [IRS's US County-to-County Migration Data](https://www.irs.gov/statistics/soi-tax-stats-migration-data). An additional tool for exploring county-specific migration trees can be found [here](https://hannaheow.shinyapps.io/migration_treeviz/).
