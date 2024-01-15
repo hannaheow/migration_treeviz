@@ -4,9 +4,9 @@ format:
   pdf: 
     geometry: 
       - paperwidth = 16in
-      - paperheight = 20in
-      - top = 0.2in
-      - bottom = 0.2in
+      - paperheight = 21in
+      - top = 0.7in
+      - bottom = 0.7in
       - right = 0.2in
       - left = 0.2in
 editor: visual
@@ -70,15 +70,15 @@ library(ggpubr)
 do.call("ggarrange", c(stateplots, nrow = 10, ncol = 5, common.legend = FALSE))
 ```
 
-```{r legend only, message = FALSE, warning = FALSE, echo = FALSE}
+```{r, fig.height = 5, fig.width = 50, message = FALSE, warning = FALSE, echo = FALSE}
+#making plot for california to then extract legend... there are probably more efficient ways to do this, but this is simple and works 
 
 casub = migtree[migtree$state.name == "California",]
 
 
 caplot = ggplot() + 
   geom_path(data = casub[order(casub$year),],
-            aes(x = x_adj_mig, y = y_adj_mig,  group = origid, color = as.factor(urbcode)),
-            alpha = 0.9,  
+            aes(x = x_adj_mig, y = y_adj_mig,  group = origid, color = as.factor(urbcode)),  
   position = position_dodge(width = 0.2)) +
   # annotate("text", x = 0, y = ifelse(statenames[i] == "Wyoming", 1.5, 0), label = unique(migtreesub$state.name), size = 30)+
   scale_color_manual(values = colorpal, labels = c(`6` = "Noncore", 
@@ -100,8 +100,9 @@ caplot = ggplot() +
         axis.title = element_blank(),
         axis.text = element_blank(), 
         legend.title = element_blank(),
-        legend.position = "bottom") + 
-  guides(color = guide_legend(nrow = 1))
+        legend.position = "bottom",
+        legend.text = element_text(size = 50)) + 
+  guides(color = guide_legend(nrow = 1, keyheight = unit(4, "in"), keywidth = unit(3, "in")))
 
 calegend = cowplot::get_legend(caplot)
 as_ggplot(calegend)
